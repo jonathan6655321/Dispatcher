@@ -126,8 +126,7 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 		printf("Error: failed to open pipe\n");
 	}
 
-//	printf("opened in father\n");
-
+	// move this into an array that holds all pipes to try to read from
 	char buf = 'c';
 	ssize_t numBytesRead = -1;
 	while(numBytesRead <= 0)
