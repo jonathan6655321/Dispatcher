@@ -31,16 +31,9 @@ int main(int argc, char **argv)
 
 	printf("IN CHILD PIPE PATH NAME: %s\n", pipePathName);
 
-	if (mkfifo(pipePathName, 0666) < 0)
-	{
-		printf("Error: failed to make the pipe\n");
-	}
-
-//	int pipeFileDescriptor = open(pipePathName, O_WRONLY);
-//	if(pipeFileDescriptor < 0)
+//	if (mkfifo(pipePathName, 0666) < 0)
 //	{
-//		printf("Error: failed to open the pipe\n");
-//		return -1;
+//		printf("Error: failed to make the pipe\n");
 //	}
 
 	if(kill(getppid(), SIGUSR1) < 0)
@@ -49,14 +42,22 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-//	if (write(pipeFileDescriptor, "a", 1) < 0)
-//	{
-//		printf("Error: failed to write into pipe\n");
-//		return -1;
-//	}
-//
-//	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
-//	unlink(pipePathName);
-	sleep(30);
+	int pipeFileDescriptor = -1;
+	while (pipeFileDescriptor < 0)
+	{
+		pipeFileDescriptor = open(pipePathName, O_WRONLY | O_NONBLOCK);
+	}
+
+	ssize_t numBytesWritten = write(pipeFileDescriptor, "a", 1);
+	while( numBytesWritten < 0)
+	{
+		printf("Trying to write\n");
+		numBytesWritten = write(pipeFileDescriptor, "a", 1);
+		sleep(1);
+	}
+
+	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
+	unlink(pipePathName);
+	sleep(1);
 	return 1;
 }

@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 
 
 	int i;
-	for (i=0; i < 5; i++)
+	for (i=0; i < 3; i++)
 	{
 		int pid = fork();
 		if (pid < 0)
@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
 			printf("SHOULD NEVER GET HERE\n");
 			return -1;
 		}
+		sleep(2);
 	}
 
 	int status;
@@ -114,17 +115,25 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 	sprintf(pipePathName, "/tmp/counter_%ld", signalSenderPid);
 	printf("IN PARENT signal handler: the pipes path name is: %s\n\n", pipePathName);
 
-//	int pipeFileDescriptor = open(pipePathName, O_RDONLY);
-//	if(pipeFileDescriptor < 0)
-//	{
-//		printf("Error: failed to open pipe\n");
-//	}
-//
-//	char buf = 'b';
-//	if (read(pipeFileDescriptor, &buf, 1) < 0)
-//	{
-//		printf("Error: failed to read\n");
-//	}
-//
-//	printf("The character received is: %c", buf);
+	if (mkfifo(pipePathName, 0666) < 0)
+	{
+		printf("Error: failed to make the pipe\n");
+	}
+
+	int pipeFileDescriptor = open(pipePathName, O_RDONLY | O_NONBLOCK);
+	if(pipeFileDescriptor < 0)
+	{
+		printf("Error: failed to open pipe\n");
+	}
+
+	printf("opened in father\n");
+
+	char buf = 'b';
+	ssize_t numBytesRead = -1;
+	while(numBytesRead < 0)
+	{
+		numBytesRead = read(pipeFileDescriptor, &buf, 1);
+	}
+
+	printf("The character received from %ld is: %c\n", signalSenderPid, buf);
 }
