@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <string.h>
+#include <signal.h>
 
 
 #include "Dispatcher.h"
@@ -28,8 +29,9 @@ int main(int argc, char **argv) {
 	char numCharsPerProcessString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(numCharsPerProcessString, "%zd", numCharsPerProcess);
 
+
 	int i;
-	for (i=0; i < 1; i++)
+	for (i=0; i < 5; i++)
 	{
 		int pid = fork();
 		if (pid < 0)
@@ -48,12 +50,27 @@ int main(int argc, char **argv) {
 					offsetInFileString, NULL};
 
 			execv("counter", argsForCounter);
-
 			return -1;
 		}
-
 	}
 
+
+	  // Structure to pass to the registration syscall
+	  struct sigaction new_action;
+	  sigemptyset(&new_action.sa_mask);
+	  // Assign pointer to our handler function
+	  new_action.sa_handler = my_signal_handler;
+	  // Remove any special flag
+	  new_action.sa_flags = 0;
+	  // Register the handler
+	  if (0 != sigaction (SIGUSR1, &new_action, NULL))
+	  {
+	    printf("Signal handle registration failed. %s\n",strerror(errno));
+	    return -1;
+	  }
+
+	int status;
+	while(wait(&status) != -1);
 
 	return 1;
 }
@@ -89,9 +106,13 @@ ssize_t getSquareRootOfFileSize(ssize_t fileSize)
 	return squareRoot;
 }
 
-void ssize_tToString(char *resultString)
+void my_signal_handler (int signum)
 {
-
-
-
+	printf("\n\n RECEIVED A SIGNAL \n\n");
+  for (int i = 0; i < 3; ++i)
+  {
+    printf("Processing USR1.\n");
+    sleep(2);
+  }
+  printf("Signal processing is complete\n");
 }
