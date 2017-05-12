@@ -13,7 +13,7 @@
 
 #define DISPATCHER_NUM_ARGUMENTS 3
 #define MAX_DIGITS_TO_REPRESENT_FILE_SIZE 20 // much more than needed
-
+#define MAX_PATH_LENGTH 100
 
 int main(int argc, char **argv) {
 
@@ -111,6 +111,8 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 {
 	long signalSenderPid = (unsigned long) info->si_pid;
 
+	char pipePathName[MAX_PATH_LENGTH];
+	sprintf(pipePathName, "/tmp/counter_%l", signalSenderPid);
 
-	printf("Signal sent from process NUMBER: %lu\n", (unsigned long) info->si_pid);
+	printf("the pipes path name is: %s\n", pipePathName);
 }
