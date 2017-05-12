@@ -44,10 +44,10 @@ int main(int argc, char **argv) {
 			char offsetInFileString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 			sprintf(offsetInFileString, "%zd", offsetInFile);
 
-			char *argsForCounter[] = {&charToCount, argv[2], numCharsPerProcessString,
+			char *argsForCounter[] = {"counter", &charToCount, argv[2], numCharsPerProcessString,
 					offsetInFileString, NULL};
 
-			execv()
+			execv("counter", argsForCounter);
 
 			return -1;
 		}
