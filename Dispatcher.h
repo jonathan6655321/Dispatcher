@@ -16,6 +16,7 @@
 
 ssize_t getFileSize(char *filePath);
 ssize_t getSquareRootOfFileSize(ssize_t fileSize);
+void my_signal_handler (int signum);
 
 
 
