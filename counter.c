@@ -21,14 +21,11 @@ int main(int argc, char **argv) {
 	ssize_t startOffsetInFile;
 	ssize_t numCharsToProcess;
 
-
-
 	if(parseCounterArguments(&charToCount, &fileDescriptor, &startOffsetInFile, &numCharsToProcess, argc, argv)
 			< 0)
 	{
 		return -1;
 	}
-
 	printf("in counter.c and the start offset is: %zd", startOffsetInFile);
 
 	return 1;
