@@ -11,9 +11,7 @@
 
 #include "Dispatcher.h"
 
-#define DISPATCHER_NUM_ARGUMENTS 3
-#define MAX_DIGITS_TO_REPRESENT_FILE_SIZE 20 // much more than needed
-#define MAX_PATH_LENGTH 100
+
 
 int main(int argc, char **argv) {
 
@@ -66,6 +64,7 @@ int main(int argc, char **argv) {
 					offsetInFileString, NULL};
 
 			execv("counter", argsForCounter);
+			printf("SHOULD NEVER GET HERE\n");
 			return -1;
 		}
 	}
@@ -112,7 +111,20 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 	long signalSenderPid = (unsigned long) info->si_pid;
 
 	char pipePathName[MAX_PATH_LENGTH];
-	sprintf(pipePathName, "/tmp/counter_%l", signalSenderPid);
+	sprintf(pipePathName, "/tmp/counter_%ld", signalSenderPid);
+	printf("IN PARENT signal handler: the pipes path name is: %s\n\n", pipePathName);
 
-	printf("the pipes path name is: %s\n", pipePathName);
+//	int pipeFileDescriptor = open(pipePathName, O_RDONLY);
+//	if(pipeFileDescriptor < 0)
+//	{
+//		printf("Error: failed to open pipe\n");
+//	}
+//
+//	char buf = 'b';
+//	if (read(pipeFileDescriptor, &buf, 1) < 0)
+//	{
+//		printf("Error: failed to read\n");
+//	}
+//
+//	printf("The character received is: %c", buf);
 }

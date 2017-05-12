@@ -18,6 +18,9 @@
 #include <signal.h>
 #include <unistd.h>
 
+#define DISPATCHER_NUM_ARGUMENTS 3
+#define MAX_DIGITS_TO_REPRESENT_FILE_SIZE 20 // much more than needed
+#define MAX_PATH_LENGTH 100
 
 ssize_t getFileSize(char *filePath);
 ssize_t getSquareRootOfFileSize(ssize_t fileSize);
