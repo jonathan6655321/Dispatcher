@@ -113,7 +113,7 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 
 	char pipePathName[MAX_PATH_LENGTH];
 	sprintf(pipePathName, "/tmp/counter_%ld", signalSenderPid);
-	printf("IN PARENT signal handler: the pipes path name is: %s\n\n", pipePathName);
+//	printf("IN PARENT signal handler: the pipes path name is: %s\n\n", pipePathName);
 
 	if (mkfifo(pipePathName, 0666) < 0)
 	{
@@ -126,7 +126,7 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 		printf("Error: failed to open pipe\n");
 	}
 
-	printf("opened in father\n");
+//	printf("opened in father\n");
 
 	char buf = 'b';
 	ssize_t numBytesRead = -1;

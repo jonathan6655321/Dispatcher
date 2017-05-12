@@ -28,14 +28,7 @@ int main(int argc, char **argv)
 	long pid = getpid();
 	char pipePathName[MAX_PATH_LENGTH];
 	sprintf(pipePathName, "/tmp/counter_%ld", pid);
-
-	printf("IN CHILD PIPE PATH NAME: %s\n", pipePathName);
-
-//	if (mkfifo(pipePathName, 0666) < 0)
-//	{
-//		printf("Error: failed to make the pipe\n");
-//	}
-
+//	printf("IN CHILD PIPE PATH NAME: %s\n", pipePathName);
 	if(kill(getppid(), SIGUSR1) < 0)
 	{
 		printf("Error: kill failed %s\n", strerror(errno));
@@ -53,7 +46,7 @@ int main(int argc, char **argv)
 	{
 		printf("Trying to write\n");
 		numBytesWritten = write(pipeFileDescriptor, "a", 1);
-		sleep(1);
+//		sleep(1);
 	}
 
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
