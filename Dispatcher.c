@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#include "Dispatcher.h"
 
 #define DISPATCHER_NUM_ARGUMENTS 3
 
@@ -19,11 +20,17 @@ int main(int argc, char **argv) {
 
 	ssize_t fileSize = getFileSize(argv[2]);
 	ssize_t numCharsPerProcess = getSquareRootOfFileSize(fileSize);
+
+
+
+
+
+	return 1;
 }
 
 ssize_t getFileSize(char *filePath)
 {
-	int fileDescriptor = open(*filePath, O_RDONLY);
+	int fileDescriptor = open(filePath, O_RDONLY);
 	if (fileDescriptor < 0)
 	{
 		printf("Error: could not open file\n");
@@ -37,7 +44,9 @@ ssize_t getFileSize(char *filePath)
 		return -1;
 	}
 	close(fileDescriptor);
-	return fileStat.st_size;
+
+	ssize_t fileSize = fileStat.st_size;
+	return fileSize;
 }
 
 ssize_t getSquareRootOfFileSize(ssize_t fileSize)
