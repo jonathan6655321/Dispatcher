@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 
 
 	int i;
-	for (i=0; i < 3; i++)
+	for (i=0; i < 16; i++)
 	{
 		int pid = fork();
 		if (pid < 0)
@@ -128,9 +128,9 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 
 //	printf("opened in father\n");
 
-	char buf = 'b';
+	char buf = 'c';
 	ssize_t numBytesRead = -1;
-	while(numBytesRead < 0)
+	while(numBytesRead <= 0)
 	{
 		numBytesRead = read(pipeFileDescriptor, &buf, 1);
 	}
