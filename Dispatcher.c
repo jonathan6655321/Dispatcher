@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 
 
 #include "Dispatcher.h"
@@ -33,10 +34,10 @@ int main(int argc, char **argv) {
 	  // Structure to pass to the registration syscall
 	  struct sigaction new_action;
 	  sigemptyset(&new_action.sa_mask);
-	  // Assign pointer to our handler function
-	  new_action.sa_handler = my_signal_handler;
 	  // Remove any special flag
-	  new_action.sa_flags = 0;
+	  new_action.sa_flags = SA_SIGINFO;
+	  // Assign pointer to our handler function
+	  new_action.sa_sigaction = my_signal_handler;
 	  // Register the handler
 	  if (0 != sigaction (SIGUSR1, &new_action, NULL))
 	  {
@@ -106,8 +107,10 @@ ssize_t getSquareRootOfFileSize(ssize_t fileSize)
 	return squareRoot;
 }
 
-void my_signal_handler (int signum)
+void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 {
-	printf("\n\n RECEIVED A SIGNAL \n\n");
-	sleep(1);
+	long signalSenderPid = (unsigned long) info->si_pid;
+
+
+	printf("Signal sent from process NUMBER: %lu\n", (unsigned long) info->si_pid);
 }
