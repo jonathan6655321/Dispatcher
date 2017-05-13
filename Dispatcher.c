@@ -11,6 +11,7 @@
 
 #include "Dispatcher.h"
 
+
 int totalCharCount = 0;
 
 int main(int argc, char **argv) {
@@ -22,12 +23,23 @@ int main(int argc, char **argv) {
 	}
 
 	char charToCount = *argv[1];
-	printf("The char to count is: %c", charToCount);
 	ssize_t fileSize = getFileSize(argv[2]);
-	ssize_t numCharsPerProcess = getSquareRootOfFileSize(fileSize);
+//	ssize_t numCharsPerProcess = getSquareRootOfFileSize(fileSize);
+	ssize_t numCharsPerProcess = getpagesize()/2;
 
 	char numCharsPerProcessString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(numCharsPerProcessString, "%zd", numCharsPerProcess);
+
+	printf("The char to count is: %c\n", charToCount);
+	printf("max number of processes: %d\nSize of half of the page table: %zd\n",
+					MAX_NUM_PROCESSES, numCharsPerProcess);
+
+	if(MAX_NUM_PROCESSES*numCharsPerProcess < fileSize)
+	{
+		printf("Error: file is too big\nmax number of processes: %d\nSize of half of the page table: %zd",
+				MAX_NUM_PROCESSES, numCharsPerProcess);
+		return -1;
+	}
 
 
 	  // Structure to pass to the registration syscall
@@ -46,7 +58,7 @@ int main(int argc, char **argv) {
 
 
 	int i;
-	for (i=0; i < 16; i++)
+	for (i=0; i < MAX_NUM_PROCESSES && (i)*numCharsPerProcess < fileSize; i++)
 	{
 		int pid = fork();
 		if (pid < 0)
@@ -64,6 +76,15 @@ int main(int argc, char **argv) {
 			char *argsForCounter[] = {"counter", &charToCount, argv[2], numCharsPerProcessString,
 					offsetInFileString, NULL};
 
+			if ((i+1)*numCharsPerProcess > fileSize)
+			{
+				ssize_t numCharsToProcessLast = fileSize - (i)*numCharsPerProcess;
+				char numCharsToProcessLastString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
+				sprintf(numCharsToProcessLastString, "%zd", numCharsToProcessLast);
+				argsForCounter[3] = numCharsToProcessLastString;
+//				printf("The number of chars to process: %s\n", numCharsToProcessLastString);
+			}
+
 			execv("counter", argsForCounter);
 			printf("SHOULD NEVER GET HERE\n");
 			return -1;
@@ -74,7 +95,7 @@ int main(int argc, char **argv) {
 	int status;
 	while(wait(&status) != -1);
 
-	printf("The total count is: %d\n", totalCharCount);
+	printf("\n\nThe total count is: %d\n", totalCharCount);
 	return 1;
 }
 
@@ -111,6 +132,7 @@ ssize_t getSquareRootOfFileSize(ssize_t fileSize)
 
 void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 {
+
 	long signalSenderPid = (unsigned long) info->si_pid;
 
 	char pipePathName[MAX_PATH_LENGTH];
@@ -139,5 +161,5 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 
 	totalCharCount += numCharCountInSegment;
 
-	printf("The number of character received from %ld is: %s\n", signalSenderPid, buf);
+//	printf("The number of character received from %ld is: %s\n", signalSenderPid, buf);
 }

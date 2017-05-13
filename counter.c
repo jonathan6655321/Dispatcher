@@ -71,6 +71,7 @@ int main(int argc, char **argv)
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
 	unlink(pipePathName);
 	sleep(1);
+	printf("Exiting a counter\n");
 	return 1;
 }
 
@@ -109,6 +110,8 @@ int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numC
 		printf("%s\n", strerror(errno));
 		return -1;
 	}
+
+//	printf("%s", fileSegment);
 
 	int numCharInstances = 0;
 	int i;
