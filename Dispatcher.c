@@ -92,7 +92,8 @@ int main(int argc, char **argv) {
 		sleep(2);
 	}
 
-	int status;
+	int status = 0;
+	int j =0;
 	while(wait(&status) != -1);
 
 	printf("\n\nThe total count is: %d\n", totalCharCount);

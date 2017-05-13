@@ -71,7 +71,6 @@ int main(int argc, char **argv)
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
 	unlink(pipePathName);
 	sleep(1);
-	printf("Exiting a counter\n");
 	return 1;
 }
 
