@@ -44,9 +44,7 @@ int main(int argc, char **argv)
 	ssize_t numBytesWritten = write(pipeFileDescriptor, "a", 1);
 	while( numBytesWritten < 0)
 	{
-		printf("Trying to write\n");
 		numBytesWritten = write(pipeFileDescriptor, "a", 1);
-//		sleep(1);
 	}
 
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.

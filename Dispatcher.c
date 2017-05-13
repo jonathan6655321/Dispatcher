@@ -129,10 +129,7 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 	// move this into an array that holds all pipes to try to read from
 	char buf = 'c';
 	ssize_t numBytesRead = -1;
-	while(numBytesRead <= 0)
-	{
-		numBytesRead = read(pipeFileDescriptor, &buf, 1);
-	}
+	while(read(pipeFileDescriptor, &buf, 1) <= 0);
 
 	printf("The character received from %ld is: %c\n", signalSenderPid, buf);
 }
