@@ -30,9 +30,9 @@ int main(int argc, char **argv) {
 	char numCharsPerProcessString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(numCharsPerProcessString, "%zd", numCharsPerProcess);
 
-	printf("The char to count is: %c\n", charToCount);
-	printf("max number of processes: %d\nSize of half of the page table: %zd\n",
-					MAX_NUM_PROCESSES, numCharsPerProcess);
+//	printf("The char to count is: %c\n", charToCount);
+//	printf("max number of processes: %d\nSize of half of the page table: %zd\n",
+//					MAX_NUM_PROCESSES, numCharsPerProcess);
 
 	if(MAX_NUM_PROCESSES*numCharsPerProcess < fileSize)
 	{
@@ -89,14 +89,14 @@ int main(int argc, char **argv) {
 			printf("SHOULD NEVER GET HERE\n");
 			return -1;
 		}
-		sleep(2);
 	}
 
 	int status = 0;
 	int j =0;
 	while(wait(&status) != -1);
 
-	printf("\n\nThe total count is: %d\n", totalCharCount);
+	printf("The count for char %c is: %d\n", charToCount,totalCharCount);
+	sleep(30);
 	return 1;
 }
 
