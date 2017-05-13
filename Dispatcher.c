@@ -11,7 +11,7 @@
 
 #include "Dispatcher.h"
 
-
+int totalCharCount = 0;
 
 int main(int argc, char **argv) {
 
@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
 	}
 
 	char charToCount = *argv[1];
+	printf("The char to count is: %c", charToCount);
 	ssize_t fileSize = getFileSize(argv[2]);
 	ssize_t numCharsPerProcess = getSquareRootOfFileSize(fileSize);
 
@@ -73,6 +74,7 @@ int main(int argc, char **argv) {
 	int status;
 	while(wait(&status) != -1);
 
+	printf("The total count is: %d\n", totalCharCount);
 	return 1;
 }
 
@@ -127,9 +129,15 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 	}
 
 	// move this into an array that holds all pipes to try to read from
-	char buf = 'c';
+	char buf[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	ssize_t numBytesRead = -1;
-	while(read(pipeFileDescriptor, &buf, 1) <= 0);
+	while(read(pipeFileDescriptor, &buf, MAX_DIGITS_TO_REPRESENT_FILE_SIZE) <= 0);
 
-	printf("The character received from %ld is: %c\n", signalSenderPid, buf);
+	ssize_t numCharCountInSegment;
+
+	sscanf(buf, "%zd", &numCharCountInSegment);
+
+	totalCharCount += numCharCountInSegment;
+
+	printf("The number of character received from %ld is: %s\n", signalSenderPid, buf);
 }

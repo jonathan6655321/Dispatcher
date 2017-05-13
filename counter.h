@@ -18,7 +18,6 @@
 
 int parseCounterArguments(char *charToCount, int *fileToProcessDescriptor,
 		ssize_t *startOffsetInFile, ssize_t *numCharsToProcess, int argc, char **argv);
-
-
+int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numCharsToProcess, char *offsetInFile );
 
 #endif /* COUNTER_H_ */
