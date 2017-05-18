@@ -35,11 +35,6 @@ int main(int argc, char **argv)
 	char pipePathName[MAX_PATH_LENGTH];
 	sprintf(pipePathName, "/tmp/counter_%ld", pid);
 
-	if(kill(getppid(), SIGUSR1) < 0)
-	{
-		printf("Error: kill failed %s\n", strerror(errno));
-		return -1;
-	}
 
 	char charToCount = *argv[1];
 	char* filePath = argv[2];
@@ -55,6 +50,12 @@ int main(int argc, char **argv)
 
 	char message[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(message, "%d", numCharInstancesInFile);
+
+	if(kill(getppid(), SIGUSR1) < 0)
+	{
+		printf("Error: kill failed %s\n", strerror(errno));
+		return -1;
+	}
 
 	int pipeFileDescriptor = open(pipePathName, O_WRONLY | O_NONBLOCK);
 	while (pipeFileDescriptor < 0)
@@ -110,6 +111,11 @@ int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numC
 		return -1;
 	}
 
+	if (flock(fileDescriptor, LOCK_UN) < 0) // waits until other processes are done
+	{
+		printf("error flock %s\n", strerror(errno));
+		return -1;
+	}
 //	printf("%s", fileSegment);
 
 	int numCharInstances = 0;
@@ -122,11 +128,6 @@ int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numC
 		}
 	}
 
-	if (flock(fileDescriptor, LOCK_UN) < 0) // waits until other processes are done
-	{
-		printf("error flock %s\n", strerror(errno));
-		return -1;
-	}
 
 	close(fileDescriptor);
 	free(fileSegment);

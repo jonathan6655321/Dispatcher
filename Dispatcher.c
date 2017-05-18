@@ -25,10 +25,18 @@ int main(int argc, char **argv) {
 	char charToCount = *argv[1];
 	ssize_t fileSize = getFileSize(argv[2]);
 //	ssize_t numCharsPerProcess = getSquareRootOfFileSize(fileSize);
-	ssize_t numCharsPerProcess = getpagesize()/2;
+	printf("The file Size is: %zd\n", fileSize);
+
+	ssize_t numCharsPerProcess = getNumCharsPerProcess(fileSize);
+	printf("The num chars per process is: %zd\n", numCharsPerProcess);
+	printf("chars per proces * num processes is: %zd", numCharsPerProcess*MAX_NUM_PROCESSES);
+
+//	ssize_t numCharsPerProcess = getpagesize()/2;
 
 	char numCharsPerProcessString[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(numCharsPerProcessString, "%zd", numCharsPerProcess);
+
+
 
 //	printf("The char to count is: %c\n", charToCount);
 //	printf("max number of processes: %d\nSize of half of the page table: %zd\n",
@@ -96,7 +104,7 @@ int main(int argc, char **argv) {
 	while(wait(&status) != -1);
 
 	printf("The count for char %c is: %d\n", charToCount,totalCharCount);
-	sleep(30);
+//	sleep(1);
 	return 1;
 }
 
@@ -131,6 +139,23 @@ ssize_t getSquareRootOfFileSize(ssize_t fileSize)
 	return squareRoot;
 }
 
+ssize_t getNumCharsPerProcess(ssize_t fileSize)
+{
+	if (fileSize < getpagesize()*2)
+	{
+		return fileSize;
+	}
+	else
+	{
+		int i = 2;
+		while (fileSize/i > getpagesize()*2 && i < MAX_NUM_PROCESSES)
+		{
+			i++;
+		}
+		return fileSize/i + 1;
+	}
+}
+
 void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 {
 
@@ -162,5 +187,5 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 
 	totalCharCount += numCharCountInSegment;
 
-//	printf("The number of character received from %ld is: %s\n", signalSenderPid, buf);
+	printf("The number of character received from %ld is: %s\n", signalSenderPid % 16, buf);
 }
