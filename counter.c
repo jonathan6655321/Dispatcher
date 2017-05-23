@@ -48,9 +48,8 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	char message[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
+	char message[MAX_DIGITS_TO_REPRESENT_FILE_SIZE]; // using file size as barrier
 	sprintf(message, "%d", numCharInstancesInFile);
-
 
 	unlink(pipePathName);
 	if (mkfifo(pipePathName, 0777) < 0)
@@ -58,28 +57,22 @@ int main(int argc, char **argv)
 		printf("Error: failed to make the pipe ? %s\n", pipePathName);
 	}
 
-//	struct stat fifoStat;
-//
-//	if (stat(pipePathName, &fifoStat) < 0)
-//	{
-//		printf("FAIL to get stat of %s\n%s\n", pipePathName, strerror(errno));
-//	} else
-//	{
-//		printf("EXISTS --- ---- %s\n", pipePathName);
-//	}
-
-
 	if(kill(getppid(), SIGUSR1) < 0)
 	{
-		printf("Error: kill failed %s\n", strerror(errno));
+//		printf("Error: kill failed %s\n", strerror(errno));
 		return -1;
 	}
+//	printf("COUNTER --  %ld :: SUCCESS message to parent\n", pid);
 
-	int pipeFileDescriptor = open(pipePathName, O_WRONLY | O_NONBLOCK);
+
+	int pipeFileDescriptor = open(pipePathName, O_WRONLY);
 	while (pipeFileDescriptor < 0)
 	{
-		pipeFileDescriptor = open(pipePathName, O_WRONLY | O_NONBLOCK);
+		pipeFileDescriptor = open(pipePathName, O_WRONLY );
+//		printf("COUNTER --  %ld :: Error opening the pipe \n%s\n", pid, strerror(errno));
+		sleep(1);
 	}
+//	printf("COUNTER --  %ld :: SUCCESS opening the pipe \n", pid);
 
 	ssize_t numBytesWritten = write(pipeFileDescriptor, message, MAX_DIGITS_TO_REPRESENT_FILE_SIZE);
 	while( numBytesWritten < 0)
@@ -89,8 +82,7 @@ int main(int argc, char **argv)
 
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
 	unlink(pipePathName); // ?? not even a malloc
-	sleep(3);
-	printf("Leaving counter %ld\n", pid);
+	sleep(1);
 	return 1;
 }
 
@@ -99,7 +91,6 @@ int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numC
 	int fileDescriptor = open(filePath, O_RDWR);
 	if (fileDescriptor < 0)
 	{
-//		fileDescriptor = open(*filePath, O_RDWR);
 		printf("%s\n", strerror(errno));
 		return -1;
 	}
@@ -123,6 +114,10 @@ int countCharInstancesInFileSegment(char charToCount, char *filePath, char *numC
 	}
 
 	char *fileSegment = (char *)malloc(sizeof(char)*numCharsToProcessSSIZE_T);
+	if(fileSegment == NULL)
+	{
+		printf("malloc failed\n");
+	}
 
 	if(read(fileDescriptor, fileSegment, numCharsToProcessSSIZE_T) != numCharsToProcessSSIZE_T)
 	{
