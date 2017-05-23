@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	}
 
 	long pid = getpid();
-	char pipePathName[MAX_PATH_LENGTH];
+	char pipePathName[MAX_PATH_LENGTH]; // TODO malloc?
 	sprintf(pipePathName, "/tmp/counter_%ld", pid);
 
 
@@ -50,6 +50,24 @@ int main(int argc, char **argv)
 
 	char message[MAX_DIGITS_TO_REPRESENT_FILE_SIZE];
 	sprintf(message, "%d", numCharInstancesInFile);
+
+
+	unlink(pipePathName);
+	if (mkfifo(pipePathName, 0777) < 0)
+	{
+		printf("Error: failed to make the pipe ? %s\n", pipePathName);
+	}
+
+//	struct stat fifoStat;
+//
+//	if (stat(pipePathName, &fifoStat) < 0)
+//	{
+//		printf("FAIL to get stat of %s\n%s\n", pipePathName, strerror(errno));
+//	} else
+//	{
+//		printf("EXISTS --- ---- %s\n", pipePathName);
+//	}
+
 
 	if(kill(getppid(), SIGUSR1) < 0)
 	{
@@ -70,8 +88,9 @@ int main(int argc, char **argv)
 	}
 
 	close(pipeFileDescriptor); // Unmap the file, close the pipe, delete the pipe file. Exit.
-	unlink(pipePathName);
-//	sleep(1);
+	unlink(pipePathName); // ?? not even a malloc
+	sleep(3);
+	printf("Leaving counter %ld\n", pid);
 	return 1;
 }
 

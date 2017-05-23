@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 
 	ssize_t numCharsPerProcess = getNumCharsPerProcess(fileSize);
 	printf("The num chars per process is: %zd\n", numCharsPerProcess);
-	printf("chars per proces * num processes is: %zd", numCharsPerProcess*MAX_NUM_PROCESSES);
+	printf("chars per proces times num processes is: %zd\n", numCharsPerProcess*MAX_NUM_PROCESSES);
 
 //	ssize_t numCharsPerProcess = getpagesize()/2;
 
@@ -101,10 +101,14 @@ int main(int argc, char **argv) {
 
 	int status = 0;
 	int j =0;
-	while(wait(&status) != -1);
+	while(wait(&status) != -1 && errno != ECHILD)
+	{
+		printf("pid = %d\n", status); // TODO while loop doens't work/ ? ? ? ??
+	}
+
 
 	printf("The count for char %c is: %d\n", charToCount,totalCharCount);
-//	sleep(1);
+	sleep(1);
 	return 1;
 }
 
@@ -165,10 +169,10 @@ void my_signal_handler( int signum, siginfo_t* info, void* ptr)
 	sprintf(pipePathName, "/tmp/counter_%ld", signalSenderPid);
 //	printf("IN PARENT signal handler: the pipes path name is: %s\n\n", pipePathName);
 
-	if (mkfifo(pipePathName, 0666) < 0)
-	{
-		printf("Error: failed to make the pipe\n");
-	}
+//	if (mkfifo(pipePathName, 0666) < 0)
+//	{
+//		printf("Error: failed to make the pipe\n");
+//	}
 
 	int pipeFileDescriptor = open(pipePathName, O_RDONLY | O_NONBLOCK);
 	if(pipeFileDescriptor < 0)
